@@ -80,6 +80,8 @@ BuildAllTargets.cmd
 
 默认构建输出位于：
 
+- `Output/Binaries/Debug/x86`
+- `Output/Binaries/Release/x86`
 - `Output/Binaries/Debug/x64`
 - `Output/Binaries/Release/x64`
 - `Output/Binaries/Debug/ARM64`
@@ -90,6 +92,10 @@ BuildAllTargets.cmd
 - 本项目是一个偏底层的系统工具示例，会直接触发系统内存列表操作。
 - 它的目标是展示一种基于 NT API 的整理方式，而不是提供复杂的图形界面或附加策略。
 - 由于行为依赖系统内部内存管理机制，请在理解用途的前提下使用。
+
+## 致谢
+
+- 代码提供：[Mile](https://mouri.moe/zh/2021/11/14/Defrag-memory-with-NT-API/)
 
 ## 许可证
 
