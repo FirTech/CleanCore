@@ -1,84 +1,86 @@
 # CleanCore
 
-CleanCore 是一个基于 NT API 的 Windows 内存碎片整理示例程序。
+[简体中文](README.zh.md) | English
 
-在系统运行过程中，内存中不可避免地会产生一些碎片，这会影响系统的执行效率，因此适时整理内存碎片是有必要的。
+CleanCore is a Windows memory defragmentation sample program based on NT APIs.
 
-市面上很多内存碎片整理工具的做法，是尽可能向系统申请大量内存，再释放这些内存，从而迫使系统把尽可能多的页面挤入交换文件。这个思路可以工作，但并不优雅：
+During system runtime, some memory fragmentation is unavoidable. This can affect overall execution efficiency, so defragmenting memory at the right time can be beneficial.
 
-- 它依赖进程自身能够申请到足够多的地址空间和内存。
-- 如果工具运行在 WoW 兼容层中，例如 32 位程序，能申请的空间天然受限。
-- 它本质上是在“逼迫”系统完成页面迁移，因此效率通常不高。
-- 这种方式会对系统调度和内存管理行为带来更明显的干扰。
+Many memory defragmentation tools on the market work by allocating as much memory as possible and then releasing it, forcing the system to push as many memory pages as possible into the paging file. This approach can work, but it is not very elegant:
 
-CleanCore 采用了另一种方式：直接调用 NT API，通知内核主动处理特定内存列表，从而以更直接的方式完成内存碎片整理。相比“疯狂申请内存再释放”的方案，这种做法更简洁，也更贴近系统底层机制。
+- It depends on the process being able to request enough address space and memory.
+- If the tool runs under the WoW compatibility layer, for example as a 32-bit process, the available address space is naturally limited.
+- It essentially "forces" the system to move pages, so the efficiency is usually not very high.
+- This approach can also have a more noticeable impact on system scheduling and memory management behavior.
 
-## 灵感来源
+CleanCore uses another approach: it directly calls NT APIs to notify the kernel to actively process specific memory lists, so memory defragmentation can be completed in a more direct way. Compared with the "allocate a lot and then free it" approach, this method is cleaner and closer to the underlying system mechanism.
 
-灵感来自 Sysinternals Suite 中的 RAMMap 工具。
+## Inspiration
 
-在使用 RAMMap 的 `Empty` 菜单相关功能时，可以观察到：按照合适的顺序操作若干内存列表，能够比较高效地整理内存碎片。基于这个思路，对相关行为进行了分析和整理，并实现了这个简化的示例程序。
+The inspiration comes from the RAMMap tool in Sysinternals Suite.
 
-## 工作原理
+When using the related functions in RAMMap's `Empty` menu, it can be observed that operating on several memory lists in an appropriate order can defragment memory quite efficiently. Based on this idea, the related behavior was analyzed and summarized, and this simplified sample program was implemented.
 
-程序启动后会执行以下步骤：
+## How It Works
 
-1. 启用当前进程的 `SeProfileSingleProcessPrivilege` 特权。
-2. 调用 `NtSetSystemInformation`，并向 `SystemMemoryListInformation` 依次传入以下命令：
+After startup, the program performs the following steps:
+
+1. Enable the `SeProfileSingleProcessPrivilege` privilege for the current process.
+2. Call `NtSetSystemInformation`, and pass the following commands to `SystemMemoryListInformation` in order:
    - `MemoryEmptyWorkingSets`
    - `MemoryFlushModifiedList`
    - `MemoryPurgeStandbyList`
 
-对应源码可以参考：
+Relevant source code:
 
 - [CleanCore.cpp](./CleanCore/CleanCore.cpp)
 
-简而言之，程序按如下顺序整理内存列表：
+In short, the program processes memory lists in the following order:
 
 - Working Sets
 - Modified Page List
 - Standby List
 
-## 运行要求
+## Runtime Requirements
 
-- 需要在 Windows 上运行。
-- 需要以管理员身份运行。
-- 程序清单文件已声明 `requireAdministrator`，启动时会请求提权。
+- Windows is required.
+- The program must be run as administrator.
+- The application manifest already declares `requireAdministrator`, so elevation will be requested on launch.
 
-## 编译
+## Build
 
-### 方法一：快速编译
+### Method 1: Quick Build
 
-在已安装 Visual Studio C++ 构建环境的前提下，直接运行：
+If a Visual Studio C++ build environment is installed, simply run:
 
 ```bat
 BuildAllTargets.cmd
 ```
 
-该脚本会：
+This script will:
 
-- 清理 `Output` 目录
-- 初始化 Visual Studio 编译环境
-- 编译 `Debug/Release` 的 `x64` 和 `ARM64` 目标
+- Clean the `Output` directory
+- Initialize the Visual Studio build environment
+- Build `Debug/Release` targets for `x86`, `x64`, and `ARM64`
 
-### 方法二：使用 Visual Studio 或 MSBuild
+### Method 2: Use Visual Studio or MSBuild
 
-也可以直接打开解决方案进行构建：
+You can also open the solution directly and build it:
 
 - [CleanCore.sln](./CleanCore.sln)
 
-### 编译依赖
+### Build Dependencies
 
-除 Visual Studio C++ 工具链外，项目还依赖以下内容：
+In addition to the Visual Studio C++ toolchain, the project also depends on:
 
-- 项目目录中的 [Mile.Project.Windows](./Mile.Project.Windows)
-- 首次构建时可访问 NuGet，用于自动还原 `Mile.Project.Configurations`、`VC-LTL`、`Mile.Windows.Helpers`、`YY-Thunks` 等依赖
+- [Mile.Project.Windows](./Mile.Project.Windows) in the project directory
+- Access to NuGet during the first build, so dependencies such as `Mile.Project.Configurations`, `VC-LTL`, `Mile.Windows.Helpers`, and `YY-Thunks` can be restored automatically
 
-首次成功还原后，后续构建通常可以直接复用本地缓存。
+After the first successful restore, subsequent builds can usually reuse the local cache directly.
 
-### 输出目录
+### Output Directories
 
-默认构建输出位于：
+By default, build outputs are placed in:
 
 - `Output/Binaries/Debug/x86`
 - `Output/Binaries/Release/x86`
@@ -87,18 +89,18 @@ BuildAllTargets.cmd
 - `Output/Binaries/Debug/ARM64`
 - `Output/Binaries/Release/ARM64`
 
-## 注意事项
+## Notes
 
-- 本项目是一个偏底层的系统工具示例，会直接触发系统内存列表操作。
-- 它的目标是展示一种基于 NT API 的整理方式，而不是提供复杂的图形界面或附加策略。
-- 由于行为依赖系统内部内存管理机制，请在理解用途的前提下使用。
+- This project is a low-level system utility sample that directly triggers Windows memory list operations.
+- Its purpose is to demonstrate a defragmentation approach based on NT APIs, rather than to provide a complex graphical interface or additional policies.
+- Because its behavior depends on internal Windows memory management mechanisms, please use it with a proper understanding of its purpose.
 
-## 致谢
+## Acknowledgements
 
-- 代码提供：[Mile](https://mouri.moe/zh/2021/11/14/Defrag-memory-with-NT-API/)
+- Code source: [Mile](https://mouri.moe/zh/2021/11/14/Defrag-memory-with-NT-API/)
 
-## 许可证
+## License
 
-本项目采用 MIT License，详见：
+This project is licensed under the MIT License. See:
 
-- [LICENSE](./LICENSE.md)
+- [LICENSE](./LICENSE)
