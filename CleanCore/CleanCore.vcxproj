@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\Mile.Project.Windows\Mile.Project.Platform.x64.props" />
+  <Import Project="..\Mile.Project.Windows\Mile.Project.Platform.ARM64.props" />
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{056C10B7-52BA-4EE8-B297-34E14AC07EAA}</ProjectGuid>
+    <RootNamespace>CleanCore</RootNamespace>
+    <MileProjectType>WindowsApplication</MileProjectType>
+    <MileProjectManifestFile>CleanCore.manifest</MileProjectManifestFile>
+    <WindowsTargetPlatformMinVersion>10.0.19041.0</WindowsTargetPlatformMinVersion>
+    <MileProjectEnableVCLTLSupport>true</MileProjectEnableVCLTLSupport>
+    <MileProjectUseProjectProperties>true</MileProjectUseProjectProperties>
+    <MileProjectCompanyName>CleanCore</MileProjectCompanyName>
+    <MileProjectFileDescription>Senseless Memory Optimization Core</MileProjectFileDescription>
+    <MileProjectInternalName>CleanCore</MileProjectInternalName>
+    <MileProjectLegalCopyright>Copyright (c) All rights reserved.</MileProjectLegalCopyright>
+    <MileProjectOriginalFilename>CleanCore.exe</MileProjectOriginalFilename>
+    <MileProjectProductName>CleanCore</MileProjectProductName>
+    <MileProjectVersion>1.0.0.0</MileProjectVersion>
+    <MileProjectVersionTag Condition="false">Alpha 1</MileProjectVersionTag>
+  </PropertyGroup>
+  <Import Project="..\Mile.Project.Windows\Mile.Project.Cpp.Default.props" />
+  <Import Project="..\Mile.Project.Windows\Mile.Project.Cpp.props" />
+  <ItemGroup>
+    <ClCompile Include="CleanCore.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="CleanCore.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MINT.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Mile.Windows.Helpers">
+      <Version>1.0.9</Version>
+    </PackageReference>
+  </ItemGroup>
+  <Import Project="..\Mile.Project.Windows\Mile.Project.Cpp.targets" />
+</Project>
